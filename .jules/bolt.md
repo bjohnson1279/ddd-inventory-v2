@@ -42,3 +42,15 @@
 ## 2026-11-20 - [Optimize N+1 query and Race Condition in ReconcileInventoryAudit]
 **Learning:** Found N+1 queries when mapping `audit.items` concurrently with `Promise.all` in `ReconcileInventoryAudit.ts`. This executes N db lookups via individual `save` operations, which can trigger race conditions on identical SKUs.
 **Action:** Transformed the `Promise.all` loop into a sequential `for...of` loop combined with a batched in-memory update process and batched `saveMany` for inventory items and cost layers. This eliminates N+1 DB operations and race conditions while preserving the fallback logic for interfaces not implementing `saveMany`.
+
+## Prevention Directives for Automated Refactoring
+- **Never Overwrite Complete Files**: Always use range-scoped replacement chunks (`StartLine`/`EndLine`) for edits to `schema.prisma`, `index.ts`, `public/index.php`, or DDL SQL scripts.
+- **Do Not Remove Core Declarations**: Do not delete existing route registrations or database DDL tables.
+- **Environment Isolation Compatibility**: When replacing fallback secrets, preserve test environment execution via `!getenv('APP_ENV')` or `getenv('APP_ENV') === 'testing'`.
+- **No Scratch Files**: Never stage or commit `test_*.ts`, `test_*.js`, `test.cjs`, `fix_*.php`, or `test.js` files to git.
+- **No Unresolved Conflict Markers**: Never stage or commit files containing Git merge conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`, `|||||||`). Always resolve conflicts cleanly before committing.
+
+## Hallucinatory Task & Empty PR Directives
+- **Zero-Diff Task Termination**: If the requested optimization, refactor, or fix is ALREADY natively present in the target branch, DO NOT create an empty pull request or commit an acknowledgment PR. Exit the task cleanly without opening a PR.
+- **Stale Suggestion Guard**: Always verify the current code on `main`/`master` before planning changes. If no actionable diff is required, cancel task execution immediately.
+
