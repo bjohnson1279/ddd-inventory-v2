@@ -30,7 +30,7 @@ The memory states:
 
 If I fix `express req.query` in `InventoryController.ts` for `suggestFefoPick`:
 ```typescript
-<<<<<<< SEARCH
+<<< SEARCH
   static async suggestFefoPick(req: Request, res: Response) {
     try {
       const productRepository = req.app.get("productRepository");
@@ -43,7 +43,7 @@ If I fix `express req.query` in `InventoryController.ts` for `suggestFefoPick`:
 
       const useCase = new SuggestFefoPicking(productRepository, costLayerRepository);
       const suggestions = await useCase.execute(sku as string, parseInt(quantity as string));
-=======
+===
   static async suggestFefoPick(req: Request, res: Response) {
     try {
       const productRepository = req.app.get("productRepository");
@@ -56,18 +56,18 @@ If I fix `express req.query` in `InventoryController.ts` for `suggestFefoPick`:
 
       const useCase = new SuggestFefoPicking(productRepository, costLayerRepository);
       const suggestions = await useCase.execute(sku.trim(), parseInt(quantity, 10));
->>>>>>> REPLACE
+>>> REPLACE
 ```
 
 Wait, `InventoryController` also has `req.query.locationId` in `list` and `getLevel`.
 ```typescript
-<<<<<<< SEARCH
+<<< SEARCH
   static async getLevel(req: Request, res: Response) {
     try {
       const repository = req.app.get("repository") as IInventoryRepository;
       const { sku } = req.params;
       const locationId = (req.query.locationId as string) || "default";
-=======
+===
   static async getLevel(req: Request, res: Response) {
     try {
       const repository = req.app.get("repository") as IInventoryRepository;
@@ -76,20 +76,20 @@ Wait, `InventoryController` also has `req.query.locationId` in `list` and `getLe
         return res.status(400).json({ error: "Invalid locationId format" });
       }
       const locationId = req.query.locationId ? (req.query.locationId as string).trim() : "default";
->>>>>>> REPLACE
+>>> REPLACE
 ```
 This is only two functions in `InventoryController`. I can easily fix this.
 
 Let's check `ForecastingController.ts`.
 ```typescript
-<<<<<<< SEARCH
+<<< SEARCH
       const locationId = (req.query.locationId as string) || "default";
-=======
+===
       if (req.query.locationId !== undefined && typeof req.query.locationId !== "string") {
         return res.status(400).json({ error: "Invalid locationId format" });
       }
       const locationId = req.query.locationId ? (req.query.locationId as string).trim() : "default";
->>>>>>> REPLACE
+>>> REPLACE
 ```
 
 Wait, the prompt says "Sentinel's Philosophy: Security is everyone's responsibility... Add input sanitization where missing".
