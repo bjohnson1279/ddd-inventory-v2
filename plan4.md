@@ -25,7 +25,7 @@ Which one should I fix? I should pick ONE. I will fix the Information Disclosure
 
 If I change `InventoryController.ts` error handling:
 ```typescript
-<<<<<<< SEARCH
+<<< SEARCH
     } catch (error: any) {
       if (error instanceof DomainException) {
         res.status(400).json({ error: error.message, type: error.name });
@@ -34,7 +34,7 @@ If I change `InventoryController.ts` error handling:
         res.status(500).json({ error: "Internal server error" });
       }
     }
-=======
+===
     } catch (error: any) {
       if (error instanceof DomainException) {
         res.status(400).json({ error: "Invalid inventory operation", type: error.name });
@@ -43,13 +43,13 @@ If I change `InventoryController.ts` error handling:
         res.status(500).json({ error: "Internal server error" });
       }
     }
->>>>>>> REPLACE
+>>> REPLACE
 ```
 But `InventoryController.ts` has 10 of these catch blocks. It's >50 lines if I replace all of them! I am constrained to <50 lines.
 
 What if I fix the parameter pollution in `InventoryController.ts`?
 ```typescript
-<<<<<<< SEARCH
+<<< SEARCH
   static async suggestFefoPick(req: Request, res: Response) {
     try {
       const productRepository = req.app.get("productRepository");
@@ -62,7 +62,7 @@ What if I fix the parameter pollution in `InventoryController.ts`?
 
       const useCase = new SuggestFefoPicking(productRepository, costLayerRepository);
       const suggestions = await useCase.execute(sku as string, parseInt(quantity as string));
-=======
+===
   static async suggestFefoPick(req: Request, res: Response) {
     try {
       const productRepository = req.app.get("productRepository");
@@ -75,17 +75,17 @@ What if I fix the parameter pollution in `InventoryController.ts`?
 
       const useCase = new SuggestFefoPicking(productRepository, costLayerRepository);
       const suggestions = await useCase.execute(sku, parseInt(quantity));
->>>>>>> REPLACE
+>>> REPLACE
 ```
 Also `locationId` in `getLevel`:
 ```typescript
-<<<<<<< SEARCH
+<<< SEARCH
   static async getLevel(req: Request, res: Response) {
     try {
       const repository = req.app.get("repository") as IInventoryRepository;
       const { sku } = req.params;
       const locationId = (req.query.locationId as string) || "default";
-=======
+===
   static async getLevel(req: Request, res: Response) {
     try {
       const repository = req.app.get("repository") as IInventoryRepository;
@@ -95,23 +95,23 @@ Also `locationId` in `getLevel`:
         return res.status(400).json({ error: "Invalid locationId parameter" });
       }
       const locationId = (req.query.locationId as string) || "default";
->>>>>>> REPLACE
+>>> REPLACE
 ```
 This is around 15 lines of changes! And it perfectly aligns with the security memory.
 
 Is there any other missing type checks for `req.query`?
 Let's look at `ForecastingController.ts`:
 ```typescript
-<<<<<<< SEARCH
+<<< SEARCH
       const locationId = (req.query.locationId as string) || "default";
       const report = await useCase.execute(locationId);
-=======
+===
       if (req.query.locationId && typeof req.query.locationId !== "string") {
         return res.status(400).json({ error: "Invalid locationId parameter format" });
       }
       const locationId = (req.query.locationId as string) || "default";
       const report = await useCase.execute(locationId);
->>>>>>> REPLACE
+>>> REPLACE
 ```
 
 Wait! Is there an Express middleware we can add?
@@ -129,11 +129,11 @@ export function queryTypeValidation(req: Request, res: Response, next: NextFunct
 ```
 And add it to `src/index.ts`?
 ```typescript
-<<<<<<< SEARCH
+<<< SEARCH
   app.use(express.json());
 
   // Register Domain Event Handlers
-=======
+===
   app.use(express.json());
 
   app.use((req, res, next) => {
@@ -146,7 +146,7 @@ And add it to `src/index.ts`?
   });
 
   // Register Domain Event Handlers
->>>>>>> REPLACE
+>>> REPLACE
 ```
 Wait! Does `req.query` ever contain arrays intentionally?
 Like `?tags=a&tags=b` -> `{ tags: ['a', 'b'] }`.
