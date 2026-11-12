@@ -27,6 +27,11 @@ jobs:
 
     env:
       DATABASE_URL: "postgresql://postgres:password@localhost:5432/inventory?schema=public"
+      JWT_SECRET: "test-jwt-secret"
+      DB_HOST: "localhost"
+      DB_PORT: "5432"
+      DB_USER: "postgres"
+      DB_NAME: "inventory"
 
     steps:
     - uses: actions/checkout@v4
